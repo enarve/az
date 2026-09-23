@@ -2,26 +2,17 @@ use std::io::{self, Read};
 use crossterm::terminal::{enable_raw_mode, disable_raw_mode};
 
 fn main() {
-    // Change terminal mode to raw
     enable_raw_mode().unwrap();
     for b in io::stdin().bytes() {
         match b {
             Ok(b) => {
                 let c = b as char;
-                println!("\r{}", c);
-                // if c.is_control() {
-                //     println!("Binary: {0:08b} ASCII: {0:#03} \r", b);
-                // } else {
-                //     println!("Binary: {0:08b} ASCII: {0:#03} Character: {1:#?}\r", b, c);
-                // }
-                // println!("{}", c);
                 if c == 'q' {
-                    // Return 
                     disable_raw_mode().unwrap();
                     break;
                 }
-            }
-            Err(e) => println!("Error reading byte from input: {}", e)
+            },
+            Err(e) => println!("{}", e)
         }
     }
 }
