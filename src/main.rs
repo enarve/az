@@ -3,7 +3,7 @@ mod editor;
 use editor::Editor;
 
 fn main() {
-    let editor = Editor::default();
+    let mut editor = Editor::default();
     let res = editor.run();
     match res {
         Ok(_) => (),

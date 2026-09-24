@@ -1,22 +1,29 @@
-use crossterm::event::{read, Event::Key, KeyCode::Char};
+use crossterm::event::{read, Event::Key, KeyCode::Char, KeyEvent, KeyModifiers};
 use crossterm::terminal::{enable_raw_mode, disable_raw_mode};
 
 #[derive(Default)]
-pub struct Editor {}
+pub struct Editor {
+    should_quit: bool,
+}
 
 impl Editor {
-    pub fn run(&self) -> Result<(), std::io::Error> {
+    pub fn run(&mut self) -> Result<(), std::io::Error> {
         enable_raw_mode()?;
         loop {
-            match read() {
-                Ok(Key(event)) => {
-                    println!("{event:?} \r");
-                    if let Char('q') = event.code {
-                        break;
-                    }
-                },
-                Err(err) => println!("Error: {err}"),
-                _ => ()
+            let res = read()?;
+            if let Key(KeyEvent {
+                code, modifiers, kind, state
+            }) = res {
+                println!("Code: {code:?} Modifiers: {modifiers:?} Kind: {kind:?} State: {state:?} \r");
+                match code {
+                    Char('q') if modifiers == KeyModifiers::CONTROL => {
+                        self.should_quit = true;
+                    },
+                    _ => ()
+                }
+            }
+            if self.should_quit {
+                break;
             }
         }
         disable_raw_mode()?;
